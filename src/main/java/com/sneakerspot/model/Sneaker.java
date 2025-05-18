@@ -6,7 +6,7 @@ public class Sneaker {
     private String description;
     private double price;
     private int size;
-    private String condition; // "Nou" sau "Second-hand"
+    private String condition;
     private int stock;
     private String imagePath;
     private int sellerId;
