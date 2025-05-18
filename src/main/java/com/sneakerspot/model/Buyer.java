@@ -1,4 +1,4 @@
-package com.example.model;
+package com.sneakerspot.model;
 
 public class Buyer {
     private String username;
