@@ -7,6 +7,7 @@ package com.sneakerspot.model;
 
 public enum OrderStatus {
     PENDING,
+    NEGOTIATION,
     CONFIRMED,
     SHIPPED,
     DELIVERED,

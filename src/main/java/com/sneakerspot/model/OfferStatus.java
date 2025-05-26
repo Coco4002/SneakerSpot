@@ -5,7 +5,6 @@ package com.sneakerspot.model;
  * Urmărește ciclul de viață al unei oferte în sistem.
  */
 
-
 public enum OfferStatus {
     PENDING,
     ACCEPTED,

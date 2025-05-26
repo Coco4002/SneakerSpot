@@ -3,56 +3,68 @@ package com.sneakerspot.model;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 
 /**
- * Clasa pentru utilizatorii care pot cumpăra produse și face oferte
+ * Clasa pentru utilizatorii care pot cumpăra sneakers și face oferte,
+ * extinde User.
  */
 
-public class Buyer {
-    private String username;
-    private String email;
-    private String password;
+public class Buyer extends User {
     private List<Order> orderHistory;
     private List<PriceOffer> activeOffers;
 
-    //Constructor
-    public Buyer(String username, String email, String password) {
-        this.username = username;
-        this.email = email;
-        this.password = password;
+    public Buyer() {
+        super();
         this.orderHistory = new ArrayList<>();
         this.activeOffers = new ArrayList<>();
     }
 
-    // Metodă pentru a face o comandă
-    public void placeOrder(Product product, int quantity) {
-        if (product.getStock() >= quantity) {
-            Order order = new Order(this, product, quantity);
+    public Buyer(int id, String username, String email, String hashedPassword) {
+        super(id, username, email, hashedPassword);
+        this.orderHistory = new ArrayList<>();
+        this.activeOffers = new ArrayList<>();
+    }
+
+    // Plasare comandă actualizat
+    public void placeOrder(Sneaker sneaker, Seller seller, int quantity) {
+        if (sneaker.getStock() >= quantity) {
+            double totalPrice = sneaker.getPrice() * quantity;
+            Order order = new Order(
+                    generateOrderId(),
+                    sneaker,
+                    this,
+                    seller,
+                    quantity,
+                    totalPrice,
+                    LocalDateTime.now(),
+                    OrderStatus.PENDING
+            );
             orderHistory.add(order);
-            product.decreaseStock(quantity);
+            sneaker.decreaseStock(quantity);
         } else {
             throw new IllegalArgumentException("Nu există stoc suficient");
         }
     }
 
-    // Metodă pentru anularea comenzii
+    // Anulare comandă
     public void cancelOrder(Order order) {
         if (order.getStatus() == OrderStatus.PENDING) {
             order.setStatus(OrderStatus.CANCELLED);
-            order.getProduct().increaseStock(order.getQuantity());
+            order.getSneaker().increaseStock(order.getQuantity());
         } else {
             throw new IllegalStateException("Comanda nu mai poate fi anulată în statusul " + order.getStatus());
         }
     }
 
-    // Metodă pentru a face o ofertă de preț
-    public void makeOffer(Product product, BigDecimal offeredPrice) {
-        PriceOffer offer = new PriceOffer(this, product, offeredPrice);
+    // Oferă un preț
+    public void makeOffer(Sneaker sneaker, BigDecimal offeredPrice) {
+        PriceOffer offer = new PriceOffer(this, sneaker, offeredPrice);
         activeOffers.add(offer);
     }
 
-    // Metodă pentru retragerea unei oferte
+    // Retrage o ofertă
     public void withdrawOffer(PriceOffer offer) {
         if (offer.getStatus() == OfferStatus.PENDING) {
             offer.setStatus(OfferStatus.WITHDRAWN);
@@ -62,20 +74,20 @@ public class Buyer {
         }
     }
 
-    // Metodă pentru vizualizarea comenzilor active
+    // Comenzi active
     public List<Order> getActiveOrders() {
         return orderHistory.stream()
-                .filter(order -> order.getStatus() == OrderStatus.PENDING || 
-                               order.getStatus() == OrderStatus.CONFIRMED)
+                .filter(order -> order.getStatus() == OrderStatus.PENDING ||
+                                 order.getStatus() == OrderStatus.CONFIRMED)
                 .collect(Collectors.toList());
     }
 
-    // Metodă pentru vizualizarea istoricului complet de oferte
+    // Istoric oferte
     public List<PriceOffer> getAllOffers() {
         return new ArrayList<>(activeOffers);
     }
 
-    // Metodă pentru verificarea statusului unei comenzi specifice
+    // Verificare status comandă
     public OrderStatus checkOrderStatus(Order order) {
         if (!orderHistory.contains(order)) {
             throw new IllegalArgumentException("Comanda nu aparține acestui cumpărător");
@@ -84,19 +96,15 @@ public class Buyer {
     }
 
     // Getters
-    public String getUsername() {
-        return username;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
     public List<Order> getOrderHistory() {
         return new ArrayList<>(orderHistory);
     }
 
     public List<PriceOffer> getActiveOffers() {
         return new ArrayList<>(activeOffers);
+    }
+
+    private int generateOrderId() {
+        return orderHistory.size() + 1;
     }
 }
