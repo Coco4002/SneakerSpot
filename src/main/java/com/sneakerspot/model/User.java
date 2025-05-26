@@ -1,32 +1,26 @@
 package com.sneakerspot.model;
 
-public class User {
-    private int id;
-    private String username;
-    private String email;
-    private String password;
-    private String role;
+public abstract class User {
+    protected int id;
+    protected String username;
+    protected String email;
+    protected String hashedPassword;
 
-    public User() {
-    }
-
-    public User(int id, String username, String email, String password, String role) {
+    public User() {}
+    public User(int id, String username, String email, String hashedPassword) {
         this.id = id;
         this.username = username;
         this.email = email;
-        this.password = password;
-        this.role = role;
+        this.hashedPassword = hashedPassword;
     }
 
     public int getId() { return id; }
     public String getUsername() { return username; }
     public String getEmail() { return email; }
-    public String getPassword() { return password; }
-    public String getRole() { return role; }
+    public String getHashedPassword() { return hashedPassword; }
 
     public void setId(int id) { this.id = id; }
     public void setUsername(String username) { this.username = username; }
     public void setEmail(String email) { this.email = email; }
-    public void setPassword(String password) { this.password = password; }
-    public void setRole(String role) { this.role = role; }
+    public void setHashedPassword(String hashedPassword) { this.hashedPassword = hashedPassword; }
 }
