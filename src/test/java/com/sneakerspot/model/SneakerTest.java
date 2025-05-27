@@ -44,7 +44,7 @@ class SneakerTest {
     @Test
     void setters() {
         Seller newSeller = new Seller(2, "otherSeller", "other@test.com", "hashedPwd");
-        
+
         sneaker.setId(100);
         sneaker.setSeller(newSeller);
         sneaker.setBrand("Nike");
@@ -53,7 +53,7 @@ class SneakerTest {
         sneaker.setSize(44);
         sneaker.setStock(20);
         sneaker.setImagePath("new_image.jpg");
-        
+
         assertEquals(100, sneaker.getId());
         assertEquals(newSeller, sneaker.getSeller());
         assertEquals("Nike", sneaker.getBrand());
@@ -135,10 +135,10 @@ class SneakerTest {
     void incrementAndDecrementStock() {
         sneaker.increaseStock(5);
         assertEquals(15, sneaker.getStock());
-        
+
         assertTrue(sneaker.decreaseStock(7));
         assertEquals(8, sneaker.getStock());
-        
+
         sneaker.increaseStock(2);
         assertEquals(10, sneaker.getStock());
     }
