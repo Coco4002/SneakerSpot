@@ -24,6 +24,7 @@ public class Sneaker {
         this.imagePath = imagePath;
     }
 
+
     public int getId() { return id; }
     public Seller getSeller() { return seller; }
     public String getBrand() { return brand; }
