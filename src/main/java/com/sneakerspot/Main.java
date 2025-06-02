@@ -1,5 +1,4 @@
 package com.sneakerspot;
-
 import com.sneakerspot.dao.DatabaseInitializer;
 import com.sneakerspot.model.User;
 
