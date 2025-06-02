@@ -11,6 +11,8 @@ import java.util.List;
 
 import javax.swing.table.DefaultTableCellRenderer;
 
+import com.sneakerspot.dao.SneakerDAO;
+
 
 public class ManageSneakersFrame extends JFrame {
     private Seller seller;
@@ -128,6 +130,11 @@ public class ManageSneakersFrame extends JFrame {
                 }
 
                 Sneaker newSneaker = new Sneaker(seller, brand, desc, pret, marime, stoc, selectedImagePath);
+
+                // Salvează sneakerul în baza de date!
+                SneakerDAO.addSneaker(newSneaker);
+
+                // Optional: dacă vrei să se vadă imediat și local, îl mai adaugi și în lista de la seller
                 seller.addSneaker(newSneaker);
 
                 // Creează un thumbnail
@@ -158,8 +165,9 @@ public class ManageSneakersFrame extends JFrame {
 
     private void loadSneakers() {
         sneakersTableModel.setRowCount(0);
-        for (Sneaker s : seller.getSneakers()) {
-            // Thumbnail pentru fiecare sneaker
+        // Adu doar sneakerii pentru Seller-ul curent:
+        java.util.List<Sneaker> userSneakers = SneakerDAO.getSneakersBySellerId(seller.getId());
+        for (Sneaker s : userSneakers) {
             ImageIcon icon = null;
             if (s.getImagePath() != null && !s.getImagePath().isEmpty()) {
                 icon = new ImageIcon(

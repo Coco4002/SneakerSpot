@@ -46,7 +46,9 @@ public class DatabaseInitializer {
                     price REAL NOT NULL,
                     size INTEGER NOT NULL,
                     stock INTEGER NOT NULL,
-                    imagePath TEXT
+                    imagePath TEXT,
+                    seller_id INTEGER NOT NULL,
+                    FOREIGN KEY (seller_id) REFERENCES seller(id)
                 )
             """);
 

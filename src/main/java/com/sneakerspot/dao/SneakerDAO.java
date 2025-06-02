@@ -10,7 +10,7 @@ public class SneakerDAO {
 
     // Adaugă un sneaker nou
     public static void addSneaker(Sneaker sneaker) {
-        String sql = "INSERT INTO sneaker (brand, description, price, size, stock, imagePath) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO sneaker (brand, description, price, size, stock, imagePath, seller_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, sneaker.getBrand());
@@ -19,6 +19,8 @@ public class SneakerDAO {
             stmt.setInt(4, sneaker.getSize());
             stmt.setInt(5, sneaker.getStock());
             stmt.setString(6, sneaker.getImagePath());
+            stmt.setInt(7, sneaker.getSeller().getId());
+
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -111,4 +113,20 @@ public class SneakerDAO {
         }
         return available;
     }
+public static List<Sneaker> getSneakersBySellerId(int sellerId) {
+    List<Sneaker> sneakers = new ArrayList<>();
+    String sql = "SELECT * FROM sneaker WHERE seller_id = ?";
+    try (Connection conn = DatabaseManager.getConnection();
+         PreparedStatement stmt = conn.prepareStatement(sql)) {
+        stmt.setInt(1, sellerId);
+        try (ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                sneakers.add(extractSneaker(rs));
+            }
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return sneakers;
+}
 }
