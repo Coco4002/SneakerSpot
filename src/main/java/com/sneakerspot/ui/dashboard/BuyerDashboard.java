@@ -25,7 +25,6 @@ public class BuyerDashboard extends JFrame {
         sneakersModel = new DefaultListModel<>();
         sneakersList = new JList<>(sneakersModel);
 
-        // Încarcă sneakers din DB (presupunem că există un SneakerDAO!)
         List<Sneaker> sneakersDisponibili = SneakerDAO.getAllAvailableSneakers();
         sneakersDisponibili.forEach(sneakersModel::addElement);
 

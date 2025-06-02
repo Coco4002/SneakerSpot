@@ -26,7 +26,6 @@ public class SellerDashboard extends JFrame {
         welcomeLabel.setFont(new Font("Arial", Font.BOLD, 18));
         panel.add(welcomeLabel, BorderLayout.NORTH);
 
-        // Exemplu de butoane funcționale pentru un dashboard de seller
         JPanel buttonPanel = new JPanel();
         JButton manageSneakersButton = new JButton("Administrează sneakers");
         JButton viewOrdersButton = new JButton("Vezi comenzi");
@@ -36,11 +35,13 @@ public class SellerDashboard extends JFrame {
         buttonPanel.add(viewOrdersButton);
         buttonPanel.add(logoutButton);
 
-        // Adaugă acțiuni butoanelor aici (poți extinde cu funcționalități reale)
         logoutButton.addActionListener(e -> {
-            dispose(); // Închide dashboardul la logout
+            dispose();
             JOptionPane.showMessageDialog(this, "Ai fost delogat!");
-            // Poți reveni la StartScreen, dacă vrei, aici
+        });
+
+        manageSneakersButton.addActionListener(e -> {
+            new ManageSneakersFrame(seller).setVisible(true);
         });
 
         panel.add(buttonPanel, BorderLayout.CENTER);

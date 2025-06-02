@@ -13,7 +13,7 @@ class SneakerTest {
     @BeforeEach
     void setUp() {
         seller = new Seller(1, "testSeller", "seller@test.com", "hashedPassword");
-        sneaker = new Sneaker(1, seller, "Adidas", "Test", 299.99, 42, 10, "image.jpg");
+        sneaker = new Sneaker(seller, "Adidas", "Test", 299.99, 42, 10, "image.jpg");
     }
 
     @Test

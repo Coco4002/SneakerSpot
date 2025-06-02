@@ -18,7 +18,7 @@ class SneakerDAOTest {
         DatabaseInitializer.initialize();
 
         testSeller = new Seller(99, "tester", "tester@s.neak", "pw");
-        testSneaker = new Sneaker(0,testSeller, "TestBrand", "TestDesc", 123.4, 42, 3, "test.jpg");
+        testSneaker = new Sneaker(testSeller, "TestBrand", "TestDesc", 123.4, 42, 3, "test.jpg");
     }
 
     @Test
