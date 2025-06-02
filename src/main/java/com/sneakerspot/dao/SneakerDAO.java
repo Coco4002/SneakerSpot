@@ -100,4 +100,15 @@ public class SneakerDAO {
         sneaker.setImagePath(rs.getString("imagePath"));
         return sneaker;
     }
+
+    public static List<Sneaker> getAllAvailableSneakers() {
+        List<Sneaker> all = getAllSneakers();
+        List<Sneaker> available = new ArrayList<>();
+        for (Sneaker sneaker : all) {
+            if (sneaker.getStock() > 0) {
+                available.add(sneaker);
+            }
+        }
+        return available;
+    }
 }

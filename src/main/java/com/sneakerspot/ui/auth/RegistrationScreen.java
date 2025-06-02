@@ -45,13 +45,14 @@ public class RegistrationScreen extends JFrame {
                 return;
             }
 
-            String hash = PasswordUtils.hashPassword(password);
+            String hashedPassword = PasswordUtils.hashPassword(password);
             User user;
             if ("seller".equals(role)) {
-                user = new Seller(0, username, email, hash);
+                user = new Seller(0, username, email, hashedPassword);
             } else {
-                user = new Buyer(0, username, email, hash);
+                user = new Buyer(0, username, email, hashedPassword);
             }
+            user.setRole(role); // <-- adaugă această linie!
             UserDAO.addUser(user, role);
 
             JOptionPane.showMessageDialog(this, "Cont creat cu succes! Te poți autentifica acum.");

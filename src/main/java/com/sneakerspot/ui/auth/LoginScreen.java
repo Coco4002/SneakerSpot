@@ -1,6 +1,8 @@
 package com.sneakerspot.ui.auth;
 
 import com.sneakerspot.dao.UserDAO;
+import com.sneakerspot.model.Buyer;
+import com.sneakerspot.model.Seller;
 import com.sneakerspot.model.User;
 import com.sneakerspot.util.PasswordUtils;
 
@@ -22,12 +24,38 @@ public class LoginScreen extends JFrame {
         loginButton.addActionListener(e -> {
             String username = usernameField.getText();
             String password = new String(passwordField.getPassword());
-
             User user = UserDAO.getUserByUsername(username);
+        if (user != null && PasswordUtils.checkPassword(password, user.getHashedPassword())) {
+            // Succes login
+        } else {
+            // Eroare
+        }
 
+            // după autentificare reușită:
             if (user != null && PasswordUtils.checkPassword(password, user.getHashedPassword())) {
                 JOptionPane.showMessageDialog(this, "Autentificare reușită!");
-                // Deschide fereastra principală sau navighează mai departe
+
+                String rol = user.getRole();
+                if (rol != null) rol = rol.toUpperCase();
+
+                switch (rol) {
+                    case "BUYER":
+                        new com.sneakerspot.ui.dashboard.BuyerDashboard((Buyer) user).setVisible(true);
+                        break;
+                    case "SELLER":
+                        new com.sneakerspot.ui.dashboard.SellerDashboard((Seller) user).setVisible(true);
+                        break;
+                    case "ADMIN":
+                        // Exemplu: new AdminDashboard(user).setVisible(true);
+                        break;
+                    default:
+                        JOptionPane.showMessageDialog(this, "Rol necunoscut!");
+                        System.out.println("Rol necunoscut: " + rol);
+                        this.dispose();
+                        return;
+                }
+
+                this.dispose(); // Închide login-ul după deschiderea dashboardului
             } else {
                 JOptionPane.showMessageDialog(this, "Utilizator sau parolă incorectă!");
             }

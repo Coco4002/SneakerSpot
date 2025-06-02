@@ -56,4 +56,5 @@ public class Sneaker {
             stock += quantity;
         }
     }
+
 }

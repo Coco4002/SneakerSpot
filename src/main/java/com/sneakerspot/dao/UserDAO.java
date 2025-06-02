@@ -1,5 +1,7 @@
 package com.sneakerspot.dao;
 
+import com.sneakerspot.model.Buyer;
+import com.sneakerspot.model.Seller;
 import com.sneakerspot.model.User;
 import com.sneakerspot.util.PasswordUtils;
 import java.sql.*;
@@ -41,21 +43,42 @@ public class UserDAO {
     }
 
     // Caută user după username
-    public static User getUserByUsername(String username) {
-        String sql = "SELECT * FROM user WHERE username = ?";
-        try (Connection conn = DatabaseManager.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, username);
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    return extractUserRs(rs);
-                }
+public static User getUserByUsername(String username) {
+    // Connect și query
+    try (Connection conn = DatabaseManager.getConnection();
+         PreparedStatement stmt = conn.prepareStatement("SELECT * FROM user WHERE username = ?")) {
+        stmt.setString(1, username);
+        ResultSet rs = stmt.executeQuery();
+        if (rs.next()) {
+            String role = rs.getString("role");
+            if ("buyer".equalsIgnoreCase(role)) {
+                Buyer buyer = new Buyer(
+                    rs.getInt("id"),
+                    rs.getString("username"),
+                    rs.getString("email"),
+                    rs.getString("hashedPassword")
+                );
+                buyer.setRole(role);
+                return buyer;
+            } else if ("seller".equalsIgnoreCase(role)) {
+                Seller seller = new Seller(
+                    rs.getInt("id"),
+                    rs.getString("username"),
+                    rs.getString("email"),
+                    rs.getString("hashedPassword")
+                );
+                seller.setRole(role);
+                return seller;
+            } else {
+                // dacă ai încă roluri, tratează separat
+                return null;
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
-        return null;
+    } catch (SQLException e) {
+        e.printStackTrace();
     }
+    return null;
+}
 
     // Listare toți userii
     public static List<User> getAllUsers() {
@@ -176,7 +199,9 @@ public class UserDAO {
         String email = rs.getString("email");
         String hashedPassword = rs.getString("hashedPassword");
         // String role = rs.getString("role");
-        return new User(id, username, email, hashedPassword) {};
+        User user = new User(id, username, email, hashedPassword) {};
+        user.setRole(rs.getString("role"));
+        return user;
     }
 
     // Caută dacă există un user cu emailul dat
