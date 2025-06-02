@@ -1,39 +1,49 @@
 package com.sneakerspot.ui.auth;
 
+import com.sneakerspot.dao.UserDAO;
+import com.sneakerspot.model.User;
+import com.sneakerspot.util.PasswordUtils;
+
 import javax.swing.*;
 import java.awt.*;
 
 public class LoginScreen extends JFrame {
+    private JTextField usernameField;
+    private JPasswordField passwordField;
+    private JButton loginButton;
+
     public LoginScreen() {
-        setTitle("SneakerSpot - Autentificare");
-        setSize(400, 200);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
+        // Inițializează componentele și layout-ul
+        usernameField = new JTextField(20);
+        passwordField = new JPasswordField(20);
+        loginButton = new JButton("Login");
 
-        JPanel panel = new JPanel(new GridLayout(3, 2, 10, 10));
-        JTextField usernameField = new JTextField();
-        JPasswordField passwordField = new JPasswordField();
+        // Adaugă acțiune pentru buton
+        loginButton.addActionListener(e -> {
+            String username = usernameField.getText();
+            String password = new String(passwordField.getPassword());
 
-        panel.add(new JLabel("Username:"));
-        panel.add(usernameField);
+            User user = UserDAO.getUserByUsername(username);
 
-        panel.add(new JLabel("Parolă:"));
-        panel.add(passwordField);
-
-        JButton loginButton = new JButton("Login");
-        panel.add(loginButton);
-
-        JButton registerButton = new JButton("Înregistrare");
-        panel.add(registerButton);
-
-        add(panel, BorderLayout.CENTER);
-
-        // Exemplu: Acțiune pe butonul de înregistrare (deschide RegistrationScreen)
-        registerButton.addActionListener(e -> {
-            new RegistrationScreen().setVisible(true);
-            dispose();
+            if (user != null && PasswordUtils.checkPassword(password, user.getHashedPassword())) {
+                JOptionPane.showMessageDialog(this, "Autentificare reușită!");
+                // Deschide fereastra principală sau navighează mai departe
+            } else {
+                JOptionPane.showMessageDialog(this, "Utilizator sau parolă incorectă!");
+            }
         });
 
-        // Poți adăuga aici acțiunea pentru butonul de login
+        // Layout și afișare (exemplificativ)
+        JPanel panel = new JPanel();
+        panel.add(new JLabel("Username:"));
+        panel.add(usernameField);
+        panel.add(new JLabel("Parolă:"));
+        panel.add(passwordField);
+        panel.add(loginButton);
+
+        this.setContentPane(panel);
+        this.pack();
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setLocationRelativeTo(null);
     }
 }

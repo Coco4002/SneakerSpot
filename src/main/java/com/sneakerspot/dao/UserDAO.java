@@ -179,4 +179,18 @@ public class UserDAO {
         return new User(id, username, email, hashedPassword) {};
     }
 
+    // Caută dacă există un user cu emailul dat
+    public static boolean getUserByEmail(String email) {
+        String sql = "SELECT 1 FROM user WHERE email = ?";
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, email);
+            try (ResultSet rs = stmt.executeQuery()) {
+                return rs.next(); // returnează true dacă a fost găsit un user cu acest email
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }
