@@ -1,6 +1,7 @@
 package com.sneakerspot.model;
 
 public class Sneaker {
+    private static int nextId = 1;
     private int id;
     private Seller seller;
     private String brand;
@@ -12,9 +13,9 @@ public class Sneaker {
 
     public Sneaker() {}
 
-    public Sneaker(int id, Seller seller, String brand, String description, double price,
+    public Sneaker(Seller seller, String brand, String description, double price,
                    int size, int stock, String imagePath) {
-        this.id = id;
+        this.id = nextId++;
         this.seller = seller;
         this.brand = brand;
         this.description = description;
@@ -56,4 +57,5 @@ public class Sneaker {
             stock += quantity;
         }
     }
+
 }

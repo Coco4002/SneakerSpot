@@ -17,7 +17,7 @@ class BuyerTest {
     void setUp() {
         seller = new Seller(1, "testSeller", "seller@test.com", "hashedPassword");
         buyer = new Buyer(2, "testBuyer", "buyer@test.com", "buyerPassword");
-        sneaker = new Sneaker(1, seller, "Nike", "Air Max", 199.99, 42, 10, "image.jpg");
+        sneaker = new Sneaker(seller, "Nike", "Air Max", 199.99, 42, 10, "image.jpg");
     }
 
     @Test

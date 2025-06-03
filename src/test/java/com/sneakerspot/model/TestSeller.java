@@ -15,8 +15,8 @@ class TestSeller {
     @BeforeEach
     void setUp() {
         seller = new Seller(10, "username", "email@test.com", "pw");
-        sneaker1 = new Sneaker(1, seller, "Adidas", "desc", 100, 40, 2, "img1.jpg");
-        sneaker2 = new Sneaker(2, seller, "Nike", "desc2", 200, 41, 3, "img2.jpg");
+        sneaker1 = new Sneaker(seller, "Adidas", "desc", 100, 40, 2, "img1.jpg");
+        sneaker2 = new Sneaker(seller, "Nike", "desc2", 200, 41, 3, "img2.jpg");
     }
 
     @Test

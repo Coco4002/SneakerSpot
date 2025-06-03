@@ -5,6 +5,7 @@ public abstract class User {
     protected String username;
     protected String email;
     protected String hashedPassword;
+    private String role;
 
     public User() {}
     public User(int id, String username, String email, String hashedPassword) {
@@ -18,9 +19,12 @@ public abstract class User {
     public String getUsername() { return username; }
     public String getEmail() { return email; }
     public String getHashedPassword() { return hashedPassword; }
+    public String getRole() { return role; }
 
     public void setId(int id) { this.id = id; }
     public void setUsername(String username) { this.username = username; }
     public void setEmail(String email) { this.email = email; }
     public void setHashedPassword(String hashedPassword) { this.hashedPassword = hashedPassword; }
+    public void setRole(String role) { this.role = role; }
+
 }
