@@ -44,6 +44,10 @@ public class SellerDashboard extends JFrame {
             new ManageSneakersFrame(seller).setVisible(true);
         });
 
+        viewOrdersButton.addActionListener(e -> {
+            new OrdersFrame(seller.getId()).setVisible(true);
+        });
+
         panel.add(buttonPanel, BorderLayout.CENTER);
 
         setContentPane(panel);

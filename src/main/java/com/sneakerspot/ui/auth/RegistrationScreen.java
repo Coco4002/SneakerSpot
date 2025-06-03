@@ -52,7 +52,7 @@ public class RegistrationScreen extends JFrame {
             } else {
                 user = new Buyer(0, username, email, hashedPassword);
             }
-            user.setRole(role); // <-- adaugă această linie!
+            user.setRole(role);
             UserDAO.addUser(user, role);
 
             JOptionPane.showMessageDialog(this, "Cont creat cu succes! Te poți autentifica acum.");

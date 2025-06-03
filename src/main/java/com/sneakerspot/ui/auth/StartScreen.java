@@ -8,7 +8,7 @@ public class StartScreen extends JFrame {
         JButton registerBtn = new JButton("Înregistrare");
 
         loginBtn.addActionListener(e -> {
-            this.dispose(); // Închide start screen
+            this.dispose();
             new LoginScreen().setVisible(true);
         });
 

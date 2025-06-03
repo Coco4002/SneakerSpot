@@ -15,23 +15,19 @@ public class LoginScreen extends JFrame {
     private JButton loginButton;
 
     public LoginScreen() {
-        // Inițializează componentele și layout-ul
         usernameField = new JTextField(20);
         passwordField = new JPasswordField(20);
         loginButton = new JButton("Login");
 
-        // Adaugă acțiune pentru buton
         loginButton.addActionListener(e -> {
             String username = usernameField.getText();
             String password = new String(passwordField.getPassword());
             User user = UserDAO.getUserByUsername(username);
         if (user != null && PasswordUtils.checkPassword(password, user.getHashedPassword())) {
-            // Succes login
         } else {
             // Eroare
         }
 
-            // după autentificare reușită:
             if (user != null && PasswordUtils.checkPassword(password, user.getHashedPassword())) {
                 JOptionPane.showMessageDialog(this, "Autentificare reușită!");
 
@@ -46,7 +42,6 @@ public class LoginScreen extends JFrame {
                         new com.sneakerspot.ui.dashboard.SellerDashboard((Seller) user).setVisible(true);
                         break;
                     case "ADMIN":
-                        // Exemplu: new AdminDashboard(user).setVisible(true);
                         break;
                     default:
                         JOptionPane.showMessageDialog(this, "Rol necunoscut!");
@@ -55,13 +50,12 @@ public class LoginScreen extends JFrame {
                         return;
                 }
 
-                this.dispose(); // Închide login-ul după deschiderea dashboardului
+                this.dispose();
             } else {
                 JOptionPane.showMessageDialog(this, "Utilizator sau parolă incorectă!");
             }
         });
 
-        // Layout și afișare (exemplificativ)
         JPanel panel = new JPanel();
         panel.add(new JLabel("Username:"));
         panel.add(usernameField);

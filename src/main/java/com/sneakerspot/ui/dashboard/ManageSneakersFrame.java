@@ -17,7 +17,6 @@ import com.sneakerspot.dao.SneakerDAO;
 public class ManageSneakersFrame extends JFrame {
     private Seller seller;
     private DefaultTableModel sneakersTableModel;
-    // Variabilă pentru calea imaginii selectate
     private String selectedImagePath = null; 
 
     public ManageSneakersFrame(Seller seller) {
@@ -32,7 +31,6 @@ public class ManageSneakersFrame extends JFrame {
     private void initUI() {
         JPanel mainPanel = new JPanel(new BorderLayout());
 
-        // 1. Adaugă coloana "Poză"
         sneakersTableModel = new DefaultTableModel(new Object[]{"ID", "Brand", "Descriere", "Preț", "Mărime", "Stoc", "Poză"}, 0) {
             @Override
             public Class<?> getColumnClass(int column) {
@@ -41,20 +39,18 @@ public class ManageSneakersFrame extends JFrame {
             }
             @Override
             public boolean isCellEditable(int row, int column) {
-                return false; // Toate celulele read-only
+                return false;
             }
         };
 
         JTable sneakersTable = new JTable(sneakersTableModel) {
-            // Ridică puțin rândurile tabelului ca să se vadă thumbnail-ul
             @Override
             public int getRowHeight() {
                 return 70;
             }
         };
-        sneakersTable.setRowHeight(70); // thumbnail de 70px
+        sneakersTable.setRowHeight(70);
 
-        // Renderer ca să afișeze ImageIcon-ul ca pe poză
         sneakersTable.getColumnModel().getColumn(6).setCellRenderer(new DefaultTableCellRenderer(){
             @Override
             public void setValue(Object value) {
@@ -72,7 +68,6 @@ public class ManageSneakersFrame extends JFrame {
 
         loadSneakers();
 
-        // Formular de adăugare
         JPanel formPanel = new JPanel();
         JTextField brandField = new JTextField(8);
         JTextField descField = new JTextField(8);
@@ -80,7 +75,6 @@ public class ManageSneakersFrame extends JFrame {
         JTextField marimeField = new JTextField(3);
         JTextField stocField = new JTextField(3);
 
-        // Elemente pentru poză
         JButton chooseImageButton = new JButton("Alege poză");
         JLabel imageLabel = new JLabel("Nicio imagine selectată");
 
@@ -107,15 +101,18 @@ public class ManageSneakersFrame extends JFrame {
         formPanel.add(new JLabel("Stoc:"));
         formPanel.add(stocField);
 
-        // Adaugă componentele pentru poză
         formPanel.add(chooseImageButton);
         formPanel.add(imageLabel);
 
         formPanel.add(addBtn);
 
+        JButton deleteBtn = new JButton("Șterge sneaker");
+        formPanel.add(deleteBtn);
+        JButton updateBtn = new JButton("Salvează modificările");
+        formPanel.add(updateBtn);
+
         mainPanel.add(formPanel, BorderLayout.SOUTH);
 
-        // ATENȚIE: la adăugare
         addBtn.addActionListener(e -> {
             try {
                 String brand = brandField.getText();
@@ -131,13 +128,10 @@ public class ManageSneakersFrame extends JFrame {
 
                 Sneaker newSneaker = new Sneaker(seller, brand, desc, pret, marime, stoc, selectedImagePath);
 
-                // Salvează sneakerul în baza de date!
                 SneakerDAO.addSneaker(newSneaker);
 
-                // Optional: dacă vrei să se vadă imediat și local, îl mai adaugi și în lista de la seller
                 seller.addSneaker(newSneaker);
 
-                // Creează un thumbnail
                 ImageIcon icon = new ImageIcon(selectedImagePath);
                 Image img = icon.getImage().getScaledInstance(70, 70, Image.SCALE_SMOOTH);
                 ImageIcon thumbnail = new ImageIcon(img);
@@ -146,7 +140,6 @@ public class ManageSneakersFrame extends JFrame {
                     newSneaker.getId(), brand, desc, pret, marime, stoc, thumbnail
                 });
 
-                // Golește câmpurile
                 brandField.setText("");
                 descField.setText("");
                 pretField.setText("");
@@ -160,12 +153,67 @@ public class ManageSneakersFrame extends JFrame {
             }
         });
 
+        deleteBtn.addActionListener(e -> {
+            int selectedRow = sneakersTable.getSelectedRow();
+            if (selectedRow == -1) {
+                JOptionPane.showMessageDialog(this, "Selectează un sneaker pe care vrei să-l ștergi.", "Nimic selectat", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            int confirm = JOptionPane.showConfirmDialog(this, "Ești sigur că vrei să ștergi sneakerul selectat?", "Confirmă ștergerea", JOptionPane.YES_NO_OPTION);
+            if (confirm == JOptionPane.YES_OPTION) {
+                int sneakerId = (int) sneakersTableModel.getValueAt(selectedRow, 0);
+                SneakerDAO.deleteSneaker(sneakerId);
+                sneakersTableModel.removeRow(selectedRow);
+            }
+        });
+
+        sneakersTable.getSelectionModel().addListSelectionListener(e -> {
+            int selectedRow = sneakersTable.getSelectedRow();
+            if (selectedRow != -1) {
+                brandField.setText(sneakersTableModel.getValueAt(selectedRow, 1).toString());
+                descField.setText(sneakersTableModel.getValueAt(selectedRow, 2).toString());
+                pretField.setText(sneakersTableModel.getValueAt(selectedRow, 3).toString());
+                marimeField.setText(sneakersTableModel.getValueAt(selectedRow, 4).toString());
+                stocField.setText(sneakersTableModel.getValueAt(selectedRow, 5).toString());
+            }
+        });
+
+        updateBtn.addActionListener(e -> {
+            int selectedRow = sneakersTable.getSelectedRow();
+            if (selectedRow == -1) {
+                JOptionPane.showMessageDialog(this, "Selectează un sneaker din tabel pentru a-l edita.", "Nicio selecție", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            try {
+                int id = (int) sneakersTableModel.getValueAt(selectedRow, 0);
+                String brand = brandField.getText();
+                String desc = descField.getText();
+                int pret = Integer.parseInt(pretField.getText());
+                int marime = Integer.parseInt(marimeField.getText());
+                int stoc = Integer.parseInt(stocField.getText());
+                Sneaker sneakerToUpdate = SneakerDAO.getSneakerById(id);
+                sneakerToUpdate.setBrand(brand);
+                sneakerToUpdate.setDescription(desc);
+                sneakerToUpdate.setPrice(pret);
+                sneakerToUpdate.setSize(marime);
+                sneakerToUpdate.setStock(stoc);
+                SneakerDAO.updateSneaker(sneakerToUpdate);
+                sneakersTableModel.setValueAt(brand, selectedRow, 1);
+                sneakersTableModel.setValueAt(desc, selectedRow, 2);
+                sneakersTableModel.setValueAt(pret, selectedRow, 3);
+                sneakersTableModel.setValueAt(marime, selectedRow, 4);
+                sneakersTableModel.setValueAt(stoc, selectedRow, 5);
+                JOptionPane.showMessageDialog(this, "Modificările au fost salvate!");
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, "Date invalide sau eroare la salvare!", "Eroare", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+
         setContentPane(mainPanel);
     }
 
     private void loadSneakers() {
         sneakersTableModel.setRowCount(0);
-        // Adu doar sneakerii pentru Seller-ul curent:
         java.util.List<Sneaker> userSneakers = SneakerDAO.getSneakersBySellerId(seller.getId());
         for (Sneaker s : userSneakers) {
             ImageIcon icon = null;
