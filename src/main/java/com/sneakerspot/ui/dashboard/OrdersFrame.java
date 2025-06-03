@@ -45,7 +45,6 @@ public class OrdersFrame extends JFrame {
         ordersTable = new JTable(tableModel);
         ordersTable.setRowHeight(35);
 
-        // Setează renderer și editor pentru acțiuni
         ordersTable.getColumnModel().getColumn(8).setCellRenderer(new ActionButtonRenderer());
         ordersTable.getColumnModel().getColumn(8).setCellEditor(new ActionButtonEditor());
 
@@ -79,13 +78,12 @@ public class OrdersFrame extends JFrame {
                     String.format("%.2f Lei", order.getTotalPrice()),
                     order.getOrderDate().format(formatter),
                     order.getStatus().name(),
-                    "" // Acțiuni
+                    ""
             };
             tableModel.addRow(rowData);
         }
     }
 
-    // --- Renderer pentru acțiuni ---
     private class ActionButtonRenderer extends JPanel implements TableCellRenderer {
         private JButton acceptBtn = new JButton("Acceptă");
         private JButton rejectBtn = new JButton("Respinge");
@@ -124,7 +122,6 @@ public class OrdersFrame extends JFrame {
         }
     }
 
-    // --- Editor pentru acțiuni ---
     private class ActionButtonEditor extends DefaultCellEditor {
         private JPanel panel = new JPanel();
         private JButton acceptBtn = new JButton("Acceptă");
