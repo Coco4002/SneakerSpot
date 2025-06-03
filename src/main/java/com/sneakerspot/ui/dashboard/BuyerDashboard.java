@@ -1,6 +1,7 @@
 package com.sneakerspot.ui.dashboard;
 
 import com.sneakerspot.model.Buyer;
+import com.sneakerspot.model.Seller;
 import com.sneakerspot.model.Sneaker;
 import com.sneakerspot.model.Order;
 import com.sneakerspot.dao.SneakerDAO;
@@ -72,23 +73,27 @@ public class BuyerDashboard extends JFrame {
         logoutButton.setBackground(new Color(231, 76, 60));
         logoutButton.setForeground(Color.WHITE);
 
-        placeOrderButton.addActionListener(e -> {
-            Sneaker selected = sneakersList.getSelectedValue();
-            if (selected == null) {
-                JOptionPane.showMessageDialog(this, "Selectează un sneaker!");
-                return;
-            }
-            String qtyStr = JOptionPane.showInputDialog(this, "Cantitate:");
-            try {
-                int qty = Integer.parseInt(qtyStr);
-                buyer.placeOrder(selected, selected.getSeller(), qty);
-                JOptionPane.showMessageDialog(this, "Comandă plasată!");
-            } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(this, "Cantitate invalidă!");
-            } catch (IllegalArgumentException iae) {
-                JOptionPane.showMessageDialog(this, iae.getMessage());
-            }
-        });
+placeOrderButton.addActionListener(e -> {
+    Sneaker selected = sneakersList.getSelectedValue();
+    if (selected == null) {
+        JOptionPane.showMessageDialog(this, "Selectează un sneaker!");
+        return;
+    }
+    String qtyStr = JOptionPane.showInputDialog(this, "Cantitate:");
+    try {
+        int qty = Integer.parseInt(qtyStr);
+        Seller seller = new Seller();
+        seller.setId(selected.getSeller().getId());
+        
+        buyer.placeOrder(selected, seller, qty);
+        JOptionPane.showMessageDialog(this, "Comandă plasată!");
+        loadSneakers();
+    } catch (NumberFormatException ex) {
+        JOptionPane.showMessageDialog(this, "Cantitate invalidă!");
+    } catch (IllegalArgumentException iae) {
+        JOptionPane.showMessageDialog(this, iae.getMessage());
+    }
+});
 
         viewOrdersButton.addActionListener(e -> {
             StringBuilder sb = new StringBuilder("Comenzile tale:\n");

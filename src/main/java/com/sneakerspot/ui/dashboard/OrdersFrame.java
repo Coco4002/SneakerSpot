@@ -45,6 +45,9 @@ public class OrdersFrame extends JFrame {
         ordersTable = new JTable(tableModel);
         ordersTable.setRowHeight(35);
 
+        ordersTable.getColumnModel().getColumn(8).setPreferredWidth(200);
+        ordersTable.getColumnModel().getColumn(8).setMinWidth(200);
+        
         ordersTable.getColumnModel().getColumn(8).setCellRenderer(new ActionButtonRenderer());
         ordersTable.getColumnModel().getColumn(8).setCellEditor(new ActionButtonEditor());
 
@@ -58,14 +61,29 @@ public class OrdersFrame extends JFrame {
         buttonPanel.add(refreshBtn);
         buttonPanel.add(closeBtn);
 
+        JPanel filterPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JComboBox<String> statusFilter = new JComboBox<>(new String[]{"Toate", "În așteptare", "Confirmate", "Anulate"});
+        filterPanel.add(new JLabel("Filtrează după status: "));
+        filterPanel.add(statusFilter);
+
+        statusFilter.addActionListener(e -> {
+            String selected = (String) statusFilter.getSelectedItem();
+            if ("În așteptare".equals(selected)) {
+                orders = OrderDAO.getPendingOrdersBySellerId(sellerId);
+            } else {
+                orders = OrderDAO.getOrdersBySellerId(sellerId);
+            }
+            updateOrdersTable();
+        });
+
         setLayout(new BorderLayout());
+        add(filterPanel, BorderLayout.NORTH);
         add(scrollPane, BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.SOUTH);
     }
 
-    private void loadOrders() {
+    private void updateOrdersTable() {
         tableModel.setRowCount(0);
-        orders = OrderDAO.getOrdersBySellerId(sellerId);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
         for (Order order : orders) {
@@ -82,6 +100,11 @@ public class OrdersFrame extends JFrame {
             };
             tableModel.addRow(rowData);
         }
+    }
+
+    private void loadOrders() {
+        orders = OrderDAO.getPendingOrdersBySellerId(sellerId);
+        updateOrdersTable();
     }
 
     private class ActionButtonRenderer extends JPanel implements TableCellRenderer {

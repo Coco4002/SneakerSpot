@@ -1,5 +1,6 @@
 package com.sneakerspot.dao;
 
+import com.sneakerspot.model.Seller;
 import com.sneakerspot.model.Sneaker;
 
 import java.sql.*;
@@ -8,7 +9,6 @@ import java.util.List;
 
 public class SneakerDAO {
 
-    // Adaugă un sneaker nou
     public static void addSneaker(Sneaker sneaker) {
         String sql = "INSERT INTO sneaker (brand, description, price, size, stock, imagePath, seller_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = DatabaseManager.getConnection();
@@ -27,7 +27,6 @@ public class SneakerDAO {
         }
     }
 
-    // Returnează toți sneakerșii
     public static List<Sneaker> getAllSneakers() {
         List<Sneaker> sneakers = new ArrayList<>();
         String sql = "SELECT * FROM sneaker";
@@ -43,7 +42,7 @@ public class SneakerDAO {
         return sneakers;
     }
 
-    // Găsește sneaker după ID
+
     public static Sneaker getSneakerById(int id) {
         String sql = "SELECT * FROM sneaker WHERE id = ?";
         try (Connection conn = DatabaseManager.getConnection();
@@ -60,7 +59,6 @@ public class SneakerDAO {
         return null;
     }
 
-    // Actualizează datele unui sneaker
     public static void updateSneaker(Sneaker sneaker) {
         String sql = "UPDATE sneaker SET brand = ?, description = ?, price = ?, size = ?, stock = ?, imagePath = ? WHERE id = ?";
         try (Connection conn = DatabaseManager.getConnection();
@@ -78,7 +76,6 @@ public class SneakerDAO {
         }
     }
 
-    // Șterge sneaker după ID
     public static void deleteSneaker(int id) {
         String sql = "DELETE FROM sneaker WHERE id = ?";
         try (Connection conn = DatabaseManager.getConnection();
@@ -90,7 +87,6 @@ public class SneakerDAO {
         }
     }
 
-    // Metodă utilitară pentru mapare ResultSet -> Sneaker
     private static Sneaker extractSneaker(ResultSet rs) throws SQLException {
         Sneaker sneaker = new Sneaker();
         sneaker.setId(rs.getInt("id"));
@@ -100,6 +96,11 @@ public class SneakerDAO {
         sneaker.setSize(rs.getInt("size"));
         sneaker.setStock(rs.getInt("stock"));
         sneaker.setImagePath(rs.getString("imagePath"));
+
+        Seller seller = new Seller();
+        seller.setId(rs.getInt("seller_id"));
+        sneaker.setSeller(seller);
+        
         return sneaker;
     }
 
