@@ -9,25 +9,23 @@ import java.util.List;
 
 public class OrderDAO {
 
-    // 1. Adaugă o comandă nouă
     public static void addOrder(Order order) {
-        String sql = "INSERT INTO orders (sneaker_id, buyer_id, seller_id, quantity, totalPrice, orderDate, status) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO orders (sneaker_id, buyer_id, seller_id, quantity, order_date, status, totalPrice) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, order.getSneaker().getId());
             stmt.setInt(2, order.getBuyer().getId());
             stmt.setInt(3, order.getSeller().getId());
             stmt.setInt(4, order.getQuantity());
-            stmt.setDouble(5, order.getTotalPrice());
-            stmt.setString(6, order.getOrderDate().toString());
-            stmt.setString(7, order.getStatus().name());
+            stmt.setString(5, order.getOrderDate().toString());
+            stmt.setString(6, order.getStatus().name());
+            stmt.setDouble(7, order.getTotalPrice());
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    // 2. Obține o comandă după id
     public static Order getOrderById(int orderId) {
         String sql = "SELECT * FROM orders WHERE id = ?";
         try (Connection conn = DatabaseManager.getConnection();
@@ -44,7 +42,6 @@ public class OrderDAO {
         return null;
     }
 
-    // 3. Obține toate comenzile
     public static List<Order> getAllOrders() {
         List<Order> orders = new ArrayList<>();
         String sql = "SELECT * FROM orders";
@@ -60,7 +57,6 @@ public class OrderDAO {
         return orders;
     }
 
-    // 4. Comenzi după buyer
     public static List<Order> getOrdersByBuyerId(int buyerId) {
         List<Order> orders = new ArrayList<>();
         String sql = "SELECT * FROM orders WHERE buyer_id = ?";
@@ -78,7 +74,6 @@ public class OrderDAO {
         return orders;
     }
 
-    // 5. Comenzi după seller
     public static List<Order> getOrdersBySellerId(int sellerId) {
         List<Order> orders = new ArrayList<>();
         String sql = "SELECT * FROM orders WHERE seller_id = ?";
@@ -96,7 +91,6 @@ public class OrderDAO {
         return orders;
     }
 
-    // 6. Actualizează statusul unei comenzi
     public static void updateOrderStatus(int orderId, OrderStatus newStatus) {
         String sql = "UPDATE orders SET status = ? WHERE id = ?";
         try (Connection conn = DatabaseManager.getConnection();
@@ -109,7 +103,6 @@ public class OrderDAO {
         }
     }
 
-    // 7. Șterge o comandă
     public static void deleteOrder(int orderId) {
         String sql = "DELETE FROM orders WHERE id = ?";
         try (Connection conn = DatabaseManager.getConnection();
@@ -121,6 +114,33 @@ public class OrderDAO {
         }
     }
 
+    public static List<Order> getPendingOrdersBySellerId(int sellerId) {
+        List<Order> orders = new ArrayList<>();
+        String sql = "SELECT o.*, s.brand, s.description, u.username as buyer_username " +
+                     "FROM orders o " +
+                     "JOIN sneaker s ON o.sneaker_id = s.id " +
+                     "JOIN user u ON o.buyer_id = u.id " +
+                     "WHERE o.seller_id = ? AND o.status = 'PENDING'";
+        
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, sellerId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Order order = extractOrder(rs);
+                    order.getSneaker().setBrand(rs.getString("brand"));
+                    order.getSneaker().setDescription(rs.getString("description"));
+                    Buyer buyer = (Buyer) order.getBuyer();
+                    buyer.setUsername(rs.getString("buyer_username"));
+                    orders.add(order);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return orders;
+    }
+
     private static Order extractOrder(ResultSet rs) throws SQLException {
         int id = rs.getInt("id");
         int sneakerId = rs.getInt("sneaker_id");
@@ -128,7 +148,7 @@ public class OrderDAO {
         int sellerId = rs.getInt("seller_id");
         int quantity = rs.getInt("quantity");
         double totalPrice = rs.getDouble("totalPrice");
-        LocalDateTime orderDate = LocalDateTime.parse(rs.getString("orderDate"));
+        LocalDateTime orderDate = LocalDateTime.parse(rs.getString("order_date"));
         OrderStatus status = OrderStatus.valueOf(rs.getString("status"));
 
         Sneaker sneaker = new Sneaker();

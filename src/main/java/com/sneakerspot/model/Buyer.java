@@ -1,5 +1,7 @@
 package com.sneakerspot.model;
 
+import com.sneakerspot.dao.OrderDAO;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +43,7 @@ public class Buyer extends User {
                     LocalDateTime.now(),
                     OrderStatus.PENDING
             );
+            OrderDAO.addOrder(order);
             orderHistory.add(order);
             sneaker.decreaseStock(quantity);
         } else {
